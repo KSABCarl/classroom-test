@@ -214,10 +214,11 @@ textarea {
           discoveryDocs: DISCOVERY_DOCS,
           scope: SCOPES
         }).then(() => {
-          gapi.auth2.getAuthInstance().signIn();
+          return gapi.auth2.getAuthInstance().signIn();
         }, function(error) {
           console.log(error);
-        }).then(() =>  {
+        }).then(data =>  {
+          console.log(data);
           gapi.load('picker');
           return getCourses();
         }).then(() => {
