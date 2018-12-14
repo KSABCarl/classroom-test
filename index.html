@@ -603,6 +603,7 @@ textarea {
           .setIncludeFolders(true)).
           setLocale('sv').
           setOAuthToken(token).
+          setOrigin(window.location.protocol + '//' + window.location.host).
           setDeveloperKey(API_KEY).
           setCallback(this.pickerCallback).
           build();
