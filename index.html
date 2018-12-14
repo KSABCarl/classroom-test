@@ -602,8 +602,7 @@ textarea {
           addView(new google.picker.DocsUploadView()
           .setIncludeFolders(true)).
           setLocale('sv').
-          setOAuthToken(token).
-          setOrigin(window.location.protocol + '//' + window.location.host).
+          setOAuthToken(token.access_token).
           setDeveloperKey(API_KEY).
           setCallback(this.pickerCallback).
           build();
