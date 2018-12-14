@@ -147,7 +147,7 @@ textarea {
       <div id="announcementCreate">
         <h3>Skapa meddelande</h3>
         <textarea placeholder="Mitt meddelande..." rows="4"></textarea>
-        <button>Bifoga fil</button>
+        <button id="pickFIles">Bifoga fil</button>
         <div id="myFiles">
         </div>
       </div>
@@ -247,7 +247,7 @@ textarea {
       }
       document.getElementById('createAnnouncement').onclick = function() {
         document.getElementById('announcementCreate').style.display = 'block';
-        createPicker();
+
       }
 
       document.getElementById('deleteCourse').onclick = function() {
@@ -261,6 +261,12 @@ textarea {
         let owner = document.getElementById('createCourseOwner').value;
         createCourse(name, owner);
       }
+      
+      document.querySelector('#pickFiles').onclick = function() {
+        createPicker();
+      }
+
+
 
       const createFragment = (htmlStr) => {
         let frag = document.createDocumentFragment();
