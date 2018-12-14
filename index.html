@@ -217,8 +217,7 @@ textarea {
           return gapi.auth2.getAuthInstance().signIn();
         }, function(error) {
           console.log(error);
-        }).then(data =>  {
-          console.log(data);
+        }).then(() =>  {
           gapi.load('picker');
           return getCourses();
         }).then(() => {
