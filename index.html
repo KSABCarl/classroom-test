@@ -100,6 +100,8 @@ body {
 table.subs {
   width: 100%;
   table-layout: fixed;
+  background-color: rgba(33, 9, 46, 0.73);
+  color: #fff;
 }
 
 table.subs td {
@@ -111,6 +113,10 @@ table.subs td {
 }
 table.subs td.late {
   background-color: rgba(193, 48, 48, 0.55);
+}
+
+table.a, table a:hover {
+  color: rgb(159, 77, 93);
 }
 
 textarea {
@@ -148,7 +154,7 @@ textarea {
         <h3>Skapa meddelande</h3>
         <textarea placeholder="Mitt meddelande..." rows="4"></textarea>
         <button id="pickFiles">Bifoga fil</button>
-        <div id="myFiles">
+        <div id="myFilesA">
         </div>
       </div>
       <div id="teacherAdd">
@@ -263,6 +269,7 @@ textarea {
       }
 
       document.getElementById('pickFiles').onclick = function() {
+        ClassRoomTest.pickerTarget = 'myFilesA';
         createPicker();
       }
 
@@ -570,7 +577,7 @@ textarea {
       }
 
       function createCourse(name, owner) {
-        // I'ts also possible to give the course an alias with which
+        // It's also possible to give the course an alias with which
         // you can retrieve the course. The alias is passed as the id
         // for the course p:<name> (for project-scoped) or d:<name>
         // (for domain-scoped).
@@ -604,6 +611,7 @@ textarea {
       }
 
       function createPicker() {
+        // for announcement
         let token = gapi.auth.getToken();
         let picker = new google.picker.PickerBuilder().
           addView(new google.picker.DocsView().
@@ -614,24 +622,37 @@ textarea {
           setLocale('sv').
           setOAuthToken(token.access_token).
           setDeveloperKey(API_KEY).
-          setCallback(this.pickerCallback).
+          setCallback(pickerCallbackA).
           build();
         picker.setVisible(true);
       }
 
-    function pickerCallback(data) {
+    function pickerCallback(resp) {
+      // for announcement
       var url = 'nothing';
-      console.log(data);
-      if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
-        var doc = data[google.picker.Response.DOCUMENTS][0];
-        url = doc[google.picker.Document.URL];
+      console.log(resp);
+      if (resp.action == 'picked') {
+        var doc = resp.docs[0];
+        var data = createFragment(
+          '<div class="file" data-fileId="'+doc.id+'">' +
+            '<a href="'+doc.url+'"<i class="fas fa-file"></i> '+doc.name+'</a>' +
+            '<select>' +
+              '<option value="VIEW">Endast visa</option>' +
+              '<option value="EDIT">Redigera</option>' +
+              '<option value="STUDENT_COPY">En kopia per elev</option>' +
+            '</select>' +
+          '</div>');
+          document.getElementById(ClassRoomTest.pickerTarget);
       }
-      // skapa med default-ikon, titel och meny för delningsinst.
+      // skapa med default-ikon, titel och meny för delningsinst (visa redigera kommentera)
       // -> när meddelandet skickats så läses alla meddelanden in igen
-      var message = 'You picked: ' + url;
-     console.log(message);
     }
 
+
+    /* hämta och visa pdf
+    gapi.client.drive.files.export({fileId: "1TF0iO3uQkLz4-Y-WKRLX1mMgwcLvKGVVooK0ngrQEG8", mimeType: 'application/pdf'}).then(resp => {window.myPdf = btoa(resp.body); })
+    document.getElementById('courselist').append(createFragment('<embed src="data:application/pdf;base64,'+window.myPdf+'" width="800" height="600"/>'))
+    */
 
     </script>
 
