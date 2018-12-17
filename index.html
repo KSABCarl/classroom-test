@@ -487,6 +487,7 @@ textarea {
 
       function getTeachers(id) {
         ClassRoomTest.teachers = {};
+        document.getElementById('loadTeachers').style.display = 'bock';
         return gapi.client.classroom.courses.teachers.list({
           courseId: id
         }).then(function(response) {
@@ -502,6 +503,7 @@ textarea {
 
       function getStudents(id) {
         ClassRoomTest.students = {};
+        document.getElementById('loadStudents').style.display = 'block';
         return gapi.client.classroom.courses.students.list({
           courseId: id,
           pageSize: 0
@@ -518,6 +520,7 @@ textarea {
 
       function getAnnouncements(id) {
         ClassRoomTest.announcements = [];
+        document.getElementById('loadAnnouncements').style.display = 'block';
         return gapi.client.classroom.courses.announcements.list({
           courseId: id,
           pageSize: 0
@@ -535,6 +538,7 @@ textarea {
 
       function getCourseWork(id) {
         ClassRoomTest.courseWork = [];
+        document.getElementById('loadCourseWork').style.display = 'block';
         return gapi.client.classroom.courses.courseWork.list({
           courseId: id,
           pageSize: 0
@@ -566,6 +570,10 @@ textarea {
       }
 
       function createCourse(name, owner) {
+        // I'ts also possible to give the course an alias with which
+        // you can retrieve the course. The alias is passed as the id
+        // for the course p:<name> (for project-scoped) or d:<name>
+        // (for domain-scoped).
         gapi.client.classroom.courses.create({
           name: name,
           ownerId: owner,
@@ -578,6 +586,8 @@ textarea {
       }
 
       function deleteCourse(course) {
+        // Course has to be set to other than ACTIVE before it can be
+        // deleted. When calling update name has to be passed (a bug in api)
         gapi.client.classroom.courses.update({
           id: course.id,
           name: course.name,
@@ -599,8 +609,8 @@ textarea {
           addView(new google.picker.DocsView().
           setOwnedByMe(true).
           setIncludeFolders(true)).
-          addView(new google.picker.DocsUploadView()
-          .setIncludeFolders(true)).
+          addView(new google.picker.DocsUploadView().
+          setIncludeFolders(true)).
           setLocale('sv').
           setOAuthToken(token.access_token).
           setDeveloperKey(API_KEY).
@@ -616,6 +626,8 @@ textarea {
         var doc = data[google.picker.Response.DOCUMENTS][0];
         url = doc[google.picker.Document.URL];
       }
+      // skapa med default-ikon, titel och meny för delningsinst.
+      // -> när meddelandet skickats så läses alla meddelanden in igen
       var message = 'You picked: ' + url;
      console.log(message);
     }
