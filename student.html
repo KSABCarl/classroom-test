@@ -127,24 +127,13 @@ textarea {
       <div id="selectedCourse">
         <h1>Vald kurs: <span id="courseName"></span></h1>
         <div id="loaders">
-          <p id="loadTeachers"><i class="fas fa-spinner"></i> Laddar lärare</p>
-          <p id="loadStudents"><i class="fas fa-spinner"></i> Laddar elever</p>
           <p id="loadAnnouncements"><i class="fas fa-spinner"></i> Laddar meddelanden</p>
           <p id="loadCourseWork"><i class="fas fa-spinner"></i> Laddar uppgifter</p>
         </div>
 
         <div id="buttons">
-          <button id="showTeachers">Visa lärare</button>
-          <button id="showStudents">Visa elever</button>
           <button id="showAnnouncements">Visa meddelanden</button>
           <button id="showCourseWork">Visa uppgifter</button>
-          <button id="deleteCourse">Radera kurs</button>
-          <br>
-          <button id="createAnnouncement">Skapa meddelande</button>
-          <button id="addTeacher">Lägg till lärare</button>
-          <button id="addStudent">Lägg till elev</button>
-          <button id="addCourseWork">Lägg till uppgift</button>
-
         </div>
       </div>
 
@@ -153,15 +142,11 @@ textarea {
       </div>
 
     </div>
-    <p>Classroom APIä-test (läare)</p>
+    <p>Classroom API-test (elev)</p>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
     <button id="getcourses">Hämta alla kurser igen</button>
-    <div id="createCourse">
-      <h3>Skapa kurs:</h3>
-      <label for="createCourseName">Namn: </label><input id="createCourseName"></input>
-      <button>Skapa kurs</button>
-    </div>
+
 
 <pre>
     2. Enrolla elev: [box ] -> visa data
@@ -189,7 +174,7 @@ textarea {
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/classroom.courses https://www.googleapis.com/auth/classroom.rosters https://www.googleapis.com/auth/classroom.coursework.students https://www.googleapis.com/auth/classroom.announcements https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive";
+      var SCOPES = "https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.coursework.me https://www.googleapis.com/auth/classroom.announcements.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive";
 
       /**
        *  On load, called to load the auth2 library and API client library.
@@ -224,14 +209,6 @@ textarea {
         getCourses();
       }
 
-      document.getElementById('showTeachers').onclick = function() {
-        showDisplay('allTeachers');
-      }
-
-      document.getElementById('showStudents').onclick = function() {
-        showDisplay('allStudents');
-      }
-
       document.getElementById('showAnnouncements').onclick = function() {
         showDisplay('allAnnouncements');
       }
@@ -239,76 +216,6 @@ textarea {
       document.getElementById('showCourseWork').onclick = function() {
         showDisplay('allCourseWork');
       }
-
-      document.getElementById('createAnnouncement').onclick = function() {
-        ClassRoomTest.selectedFiles = {};
-        let data = createFragment(
-          '<div id="announcementCreate">' +
-            '<h3>Skapa meddelande</h3>' +
-            '<textarea placeholder="Mitt meddelande..." rows="4"></textarea>'+
-            '<button id="pickFiles">Bifoga fil</button>'+
-            '<div id="myFilesA"></div>' +
-            '<button id="saveAnnounement">Spara</button>'+
-          '</div>');
-        document.getElementById('selectedCourse').after(data);
-        const pickFiles = document.getElementById('pickFiles');
-        const save =  document.getElementById('saveAnnounement');
-        pickFiles.onclick = () => {
-          ClassRoomTest.pickerTarget = 'myFilesA';
-          createPicker();
-        };
-        save.onclick = () => {
-          let message = document.querySelector('#announcementCreate textarea').value;
-          let files = ClassRoomTest.selectedFiles;
-          for (i in files) {
-            let mode = document.querySelector('[data-fileid="'+i+'"] select').value;
-            files[i].mode = mode;
-          }
-          saveAnnouncement(ClassRoomTest.courseId, message, files).then(() => {
-            document.getElementById('announcementCreate').remove();
-            getAnnouncements(ClassRoomTest.courseId).then(() => {
-              showDisplay('allAnnouncements');
-            });
-          });
-        };
-      }
-
-      document.getElementById('addTeacher').onclick = function() {
-        let data = createFragment(
-          '<div id="teacherAdd">' +
-            '<h3>Bjud in lärare (Obs! Detta är på riktigt!)</h3>' +
-            '<p><em>För att lägga till automatiskt så måste man ha domän-rättigheter.</em></p>' +
-            '<input placeholder="E-postadress">'+
-            '<button id="saveTeacher">Spara</button>'+
-          '</div>');
-          document.getElementById('selectedCourse').after(data);
-          const save =  document.getElementById('saveTeacher');
-          save.onclick = () => {
-            let teacher = document.querySelector('#teacherAdd input').value;
-            createTeacher(ClassRoomTest.courseId, teacher).then(() => {
-              document.getElementById('teacherAdd').remove();
-            });
-          };
-      }
-
-      document.getElementById('addStudent').onclick = function() {
-        let data = createFragment(
-          '<div id="studentAdd">' +
-            '<h3>Bjud in elev (Obs! Detta är på riktigt!)</h3>' +
-            '<p><em>För att lägga till automatiskt så måste man ha domän-rättigheter.</em></p>' +
-            '<input placeholder="E-postadress">'+
-            '<button id="saveStudent">Spara</button>'+
-          '</div>');
-          document.getElementById('selectedCourse').after(data);
-          const save =  document.getElementById('saveStudent');
-          save.onclick = () => {
-            let student = document.querySelector('#studentAdd input').value;
-            createStudent(ClassRoomTest.courseId, student).then(() => {
-              document.getElementById('studentAdd').remove();
-            });
-          };
-      }
-
 
       document.getElementById('addCourseWork').onclick = function() {
         ClassRoomTest.selectedFiles = {};
@@ -352,17 +259,6 @@ textarea {
         };
       }
 
-      document.getElementById('deleteCourse').onclick = function() {
-        if (confirm('Är du säker?')) {
-          deleteCourse(ClassRoomTest.course);
-        }
-      }
-
-      document.querySelector('#createCourse button').onclick = function() {
-        let name = document.getElementById('createCourseName').value;
-        createCourse(name, 'me');
-      }
-
       const createFragment = (htmlStr) => {
         let frag = document.createDocumentFragment();
         let temp = document.createElement('div');
@@ -398,22 +294,6 @@ textarea {
           getAnnouncements(course.id);
           getCourseWork(course.id);
         }
-      }
-
-      const showTeacher = (teacher) => {
-        let html = createFragment(
-          '<div class="teacher" data-id="'+teacher.id+'">' +
-            '<h3>'+teacher.name.fullName+'</h3>' +
-          '</div>');
-        document.getElementById('data').appendChild(html);
-      }
-
-      const showStudent = (student) => {
-        let html = createFragment(
-          '<div class="student" data-id="'+student.id+'">' +
-            '<h3>'+student.name.fullName+'</h3>' +
-          '</div>');
-        document.getElementById('data').appendChild(html);
       }
 
       const showMaterial = (material) => {
@@ -654,6 +534,7 @@ textarea {
         });
       }
 
+
       function getSubmissions(courseId, courseWorkId) {
         ClassRoomTest.submissions[courseWorkId] = [];
         return gapi.client.classroom.courses.courseWork.studentSubmissions.list({
@@ -670,64 +551,6 @@ textarea {
         });
       }
 
-      function createCourse(name, owner) {
-        // It's also possible to give the course an alias with which
-        // you can retrieve the course. The alias is passed as the id
-        // for the course p:<name> (for project-scoped) or d:<name>
-        // (for domain-scoped).
-        // The owner could be a common administration-user and all
-        // teachers are added separately with createTacher
-        gapi.client.classroom.courses.create({
-          name: name,
-          ownerId: owner,
-          courseState: 'ACTIVE'
-        }).then(function(response) {
-          getCourses().then(() => {
-            showDisplay('allCourses')
-          });
-        });
-      }
-
-      function deleteCourse(course) {
-        // Course has to be set to other than ACTIVE before it can be
-        // deleted. When calling update name has to be passed (a bug in api)
-        gapi.client.classroom.courses.update({
-          id: course.id,
-          name: course.name,
-          courseState: 'ARCHIVED'
-        }).then(function(response) {
-          gapi.client.classroom.courses.delete({
-            id: course.id
-          }).then(function(response) {
-            getCourses().then(() => {
-              showDisplay('allCourses')
-            });
-          });
-        });
-      }
-
-
-      function saveAnnouncement(cid, message, files) {
-        let payload = {
-          courseId: cid,
-          text: message,
-          state: 'PUBLISHED'
-        };
-        let materials = [];
-        for (i in files) {
-          materials.push({
-            'driveFile': {
-              'driveFile': {
-                id: files[i].id
-              },
-              'shareMode': files[i].mode
-            }
-          });
-        }
-        payload.materials = materials;
-
-        return gapi.client.classroom.courses.announcements.create(payload);
-      }
 
       function saveCourseWork(cid, title, message, worktype, duets, files) {
 
@@ -767,40 +590,6 @@ textarea {
 
         return gapi.client.classroom.courses.courseWork.create(payload);
       }
-
-
-      function createTeacher(cid, tid) {
-        // Doesn't actually create teacher because caller needs administrative
-        // permissions.
-        // Instead we send an invitation.
-        // Real function for creating teacher below
-        return gapi.client.classroom.invitations.create({
-          userId: tid,
-          courseId: cid,
-          role: 'TEACHER'
-        });
-        /*return gapi.client.classroom.courses.teachers.create({
-          courseId: cid,
-          userId: tid
-        });*/
-      }
-
-      function createStudent(cid, sid) {
-        // Doesn't actually create a student because caller needs administrative
-        // permissions.
-        // Instead we send an invitation.
-        // Real function for creating student below
-        return gapi.client.classroom.invitations.create({
-          userId: sid,
-          courseId: cid,
-          role: 'STUDENT'
-        });
-        /*return gapi.client.classroom.courses.students.create({
-          courseId: cid,
-          userId: sid
-        });*/
-      }
-
 
       function createPicker() {
         let token = gapi.auth.getToken();
@@ -848,6 +637,12 @@ textarea {
         document.getElementById(ClassRoomTest.pickerTarget).append(data);
       }
     }
+
+
+        /* hämta och visa pdf
+        gapi.client.drive.files.export({fileId: "1TF0iO3uQkLz4-Y-WKRLX1mMgwcLvKGVVooK0ngrQEG8", mimeType: 'application/pdf'}).then(resp => {window.myPdf = btoa(resp.body); })
+        document.getElementById('courselist').append(createFragment('<embed src="data:application/pdf;base64,'+window.myPdf+'" width="800" height="600"/>'))
+        */
 
     </script>
 
