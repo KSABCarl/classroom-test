@@ -147,11 +147,6 @@ textarea {
         </div>
       </div>
 
-      <div id="teacherAdd">
-      </div>
-      <div id="studentAdd">
-      </div>
-
       <div id="data">
 
       </div>
@@ -277,7 +272,8 @@ textarea {
       document.getElementById('addTeacher').onclick = function() {
         let data = createFragment(
           '<div id="teacherAdd">' +
-            '<h3>Lägg till lärare (Obs! Detta är på riktigt!)</h3>' +
+            '<h3>Bjud in lärare (Obs! Detta är på riktigt!)</h3>' +
+            '<p><em>För att lägga till automatiskt så måste man ha domän-rättigheter.</em></p>' +
             '<input placeholder="E-postadress">'+
             '<button id="saveTeacher">Spara</button>'+
           '</div>');
@@ -287,6 +283,24 @@ textarea {
             let teacher = document.querySelector('#teacherAdd input').value;
             createTeacher(ClassRoomTest.courseId, teacher).then(() => {
               document.getElementById('teacherAdd').remove();
+            });
+          };
+      }
+
+      document.getElementById('addStudent').onclick = function() {
+        let data = createFragment(
+          '<div id="studentAdd">' +
+            '<h3>Lägg till elev (Obs! Detta är på riktigt!)</h3>' +
+            '<p><em>För att lägga till automatiskt så måste man ha domän-rättigheter.</em></p>' +
+            '<input placeholder="E-postadress">'+
+            '<button id="saveStudent">Spara</button>'+
+          '</div>');
+          document.getElementById('selectedCourse').after(data);
+          const save =  document.getElementById('saveStudent');
+          save.onclick = () => {
+            let student = document.querySelector('#studentAdd input').value;
+            createStudent(ClassRoomTest.courseId, student).then(() => {
+              document.getElementById('studentAdd').remove();
             });
           };
       }
@@ -673,14 +687,39 @@ textarea {
       }
 
       function createTeacher(cid, tid) {
-        return gapi.client.classroom.courses.teachers.create({
+        // Doesn't actually create teacher because caller needs administrative
+        // permissions.
+        // Instead we send an invitation.
+        // Real function for creating teacher below
+        return gapi.client.classroom.invitations.create({
+          userId: tid,
+          courseId: cid,
+          role: 'TEACHER'
+        });
+        /*return gapi.client.classroom.courses.teachers.create({
           courseId: cid,
           userId: tid
+        });*/
+      }
+
+      function createStudent(cid, sid) {
+        // Doesn't actually create a student because caller needs administrative
+        // permissions.
+        // Instead we send an invitation.
+        // Real function for creating student below
+        /*return gapi.client.classroom.invitations.create({
+          userId: sid,
+          courseId: cid,
+          role: 'STUDENT'
+        });*/
+        return gapi.client.classroom.courses.students.create({
+          courseId: cid,
+          userId: sid
         });
       }
 
+
       function createPicker() {
-        // for announcement
         let token = gapi.auth.getToken();
         let picker = new google.picker.PickerBuilder().
           addView(new google.picker.DocsView().
@@ -697,25 +736,34 @@ textarea {
       }
 
     function pickerCallback(resp) {
-      // for announcement
       var url = 'nothing';
       console.log(resp);
       if (resp.action == 'picked') {
         var doc = resp.docs[0];
         ClassRoomTest.selectedFiles[doc.id] = doc;
-        var data = createFragment(
-          '<div class="file" data-fileId="'+doc.id+'">' +
-            '<a href="'+doc.url+'"<i class="fas fa-file"></i> '+doc.name+'</a>' +
-            '<select>' +
-              '<option value="VIEW">Endast visa</option>' +
-              '<option value="EDIT">Redigera</option>' +
-              '<option value="STUDENT_COPY">En kopia per elev</option>' +
-            '</select>' +
-          '</div>');
-          document.getElementById(ClassRoomTest.pickerTarget).append(data);
+        if (ClassRoomTest.pickerTarget == 'myFilesA') {
+          // Announcemnts can't set mode STUDENT_COPY
+          var data = createFragment(
+            '<div class="file" data-fileId="'+doc.id+'">' +
+              '<a href="'+doc.url+'"<i class="fas fa-file"></i> '+doc.name+'</a>' +
+              '<select>' +
+                '<option value="VIEW">Endast visa</option>' +
+                '<option value="EDIT">Redigera</option>' +
+              '</select>' +
+            '</div>');
+        } else {
+          var data = createFragment(
+            '<div class="file" data-fileId="'+doc.id+'">' +
+              '<a href="'+doc.url+'"<i class="fas fa-file"></i> '+doc.name+'</a>' +
+              '<select>' +
+                '<option value="VIEW">Endast visa</option>' +
+                '<option value="EDIT">Redigera</option>' +
+                '<option value="STUDENT_COPY">En kopia per elev</option>' +
+              '</select>' +
+            '</div>');
+        }
+        document.getElementById(ClassRoomTest.pickerTarget).append(data);
       }
-      // skapa med default-ikon, titel och meny för delningsinst (visa redigera kommentera)
-      // -> när meddelandet skickats så läses alla meddelanden in igen
     }
 
 
