@@ -143,6 +143,7 @@ textarea {
           <button id="createAnnouncement">Skapa meddelande</button>
           <button id="addTeacher">Lägg till lärare</button>
           <button id="addStudent">Lägg till elev</button>
+          <button id="addCourseWork">Lägg till uppgift</button>
 
         </div>
       </div>
@@ -290,7 +291,7 @@ textarea {
       document.getElementById('addStudent').onclick = function() {
         let data = createFragment(
           '<div id="studentAdd">' +
-            '<h3>Lägg till elev (Obs! Detta är på riktigt!)</h3>' +
+            '<h3>Bjud in elev (Obs! Detta är på riktigt!)</h3>' +
             '<p><em>För att lägga till automatiskt så måste man ha domän-rättigheter.</em></p>' +
             '<input placeholder="E-postadress">'+
             '<button id="saveStudent">Spara</button>'+
@@ -303,6 +304,49 @@ textarea {
               document.getElementById('studentAdd').remove();
             });
           };
+      }
+
+
+      document.getElementById('createCourseWork').onclick = function() {
+        ClassRoomTest.selectedFiles = {};
+        let data = createFragment(
+          '<div id="courseWorkCreate">' +
+            '<h3>Skapa uppgift</h3>' +
+            '<input type="text" class="title" placeholder="Min titel..."><br>' +
+            '<textarea placeholder="Mina instruktioner..." rows="4"></textarea>'+
+            '<select>' +
+              '<option value="ASSIGNMENT">Inlämning</option>' +
+              '<option value="SHORT_ANSWER_QUESTION">Kortsvar</option>' +
+            '</select>' +
+            '<input type="datetime-local" class="due"><br>' +
+            '<button id="pickFiles">Bifoga fil</button>'+
+            '<div id="myFilesC"></div>' +
+            '<button id="saveCourseWork">Spara</button>'+
+          '</div>');
+        document.getElementById('selectedCourse').after(data);
+        const pickFiles = document.getElementById('pickFiles');
+        const save =  document.getElementById('saveCourseWork');
+        pickFiles.onclick = () => {
+          ClassRoomTest.pickerTarget = 'myFilesC';
+          createPicker();
+        };
+        save.onclick = () => {
+          let title = document.querySelector('#courseWorkCreate input.title').value;
+          let message = document.querySelector('#courseWorkCreate textarea').value;
+          let worktype = document.querySelector('#courseWorkCreate select').value;
+          let duets = ocument.querySelector('#courseWorkCreate input.due').value;
+          let files = ClassRoomTest.selectedFiles;
+          for (i in files) {
+            let mode = document.querySelector('[data-fileid="'+i+'"] select').value;
+            files[i].mode = mode;
+          }
+          saveCourseWork(ClassRoomTest.courseId, title, message, worktype, duets, files).then(() => {
+            document.getElementById('courseWorkCreate').remove();
+            getCourseWork(ClassRoomTest.courseId).then(() => {
+              showDisplay('allCourseWork');
+            });
+          });
+        };
       }
 
       document.getElementById('deleteCourse').onclick = function() {
@@ -677,14 +721,50 @@ textarea {
             }
           });
         }
-        console.log(materials);
+        payload.materials = materials;
 
-        return gapi.client.classroom.courses.announcements.create({
-          courseId: cid,
-          text: message,
-          materials: materials
-        });
+        return gapi.client.classroom.courses.announcements.create(payload);
       }
+
+      function saveCourseWork(cid, title, message, worktype, duets, files) {
+
+        let payload = {
+          courseId: cid,
+          title: title,
+          description: meassage,
+          state: 'PUBLISHED',
+          workType: worktype
+        };
+
+        let materials = [];
+        for (i in files) {
+          materials.push({
+            'driveFile': {
+              'driveFile': {
+                id: files[i].id
+              },
+              'shareMode': files[i].mode
+            }
+          });
+        }
+
+        let due = new Date(duets);
+        let dueDate = {
+          year: due.getFullYear(),
+          month: due.getMonth(),
+          day: due.getDate()
+        }
+        let dueTime = {
+          hours: due.getHours(),
+          minutes: due.getMinutes()
+        }
+        payload.materials = materials;
+        payload.dueDate = dueDate;
+        payload.dueTime = dueTime;
+
+        return gapi.client.classroom.courses.announcements.create(payload);
+      }
+
 
       function createTeacher(cid, tid) {
         // Doesn't actually create teacher because caller needs administrative
@@ -707,15 +787,15 @@ textarea {
         // permissions.
         // Instead we send an invitation.
         // Real function for creating student below
-        /*return gapi.client.classroom.invitations.create({
+        return gapi.client.classroom.invitations.create({
           userId: sid,
           courseId: cid,
           role: 'STUDENT'
-        });*/
-        return gapi.client.classroom.courses.students.create({
+        });
+        /*return gapi.client.classroom.courses.students.create({
           courseId: cid,
           userId: sid
-        });
+        });*/
       }
 
 
