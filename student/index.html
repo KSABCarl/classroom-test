@@ -395,6 +395,7 @@ textarea {
           pageSize: 0,
           courseStates: ['ACTIVE', 'PROVISIONED']
         }).then(function(response) {
+          console.log(response);
           var courses = response.result.courses;
           if (courses.length > 0) {
             for (i = 0; i < courses.length; i++) {
