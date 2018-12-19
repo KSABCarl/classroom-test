@@ -240,6 +240,7 @@ textarea {
       document.getElementById('showCourseWork').onclick = function() {
         showDisplay('allCourseWork');
       }
+
       document.getElementById('createAnnouncement').onclick = function() {
         ClassRoomTest.selectedFiles = {};
         let data = createFragment(
@@ -271,6 +272,23 @@ textarea {
             });
           });
         };
+      }
+
+      document.getElementById('addTeacher').onclick = function() {
+        let data = createFragment(
+          '<div id="teacherAdd">' +
+            '<h3>Lägg till lärare (Obs! Detta är på riktigt!)</h3>' +
+            '<input placeholder="E-postadress">'+
+            '<button id="saveTeacher">Spara</button>'+
+          '</div>');
+          document.getElementById('selectedCourse').after(data);
+          const save =  document.getElementById('saveTeacher');
+          save.onclick = () => {
+            let teacher = document.querySelector('#teacherAdd input').value;
+            createTeacher(ClassRoomTest.courseId, teacher).then(() => {
+              document.getElementById('teacherAdd').remove();
+            });
+          };
       }
 
       document.getElementById('deleteCourse').onclick = function() {
@@ -638,10 +656,12 @@ textarea {
         for (i in files) {
           materials.push({
             'driveFile': {
-              id: files[i].id
-            },
-            'shareMode': files[i].mode
-          })
+              'driveFile': {
+                id: files[i].id
+              },
+              'shareMode': files[i].mode
+            }
+          });
         }
         console.log(materials);
 
@@ -649,6 +669,13 @@ textarea {
           courseId: cid,
           text: message,
           materials: materials
+        });
+      }
+
+      function createTeacher(cid, tid) {
+        return gapi.client.classroom.courses.teachers.create({
+          courseId: cid,
+          userId: tid
         });
       }
 
