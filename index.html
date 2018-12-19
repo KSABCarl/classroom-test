@@ -90,10 +90,7 @@ body {
 }
 
 
-#selectedCourse,
-#announcementCreate,
-#teacherAdd,
-#studentAdd {
+#selectedCourse {
   display: none;
 }
 
@@ -264,7 +261,7 @@ textarea {
           let message = document.querySelector('#announcementCreate textarea').value;
           let files = ClassRoomTest.selectedFiles;
           for (i in files) {
-            let mode = document.querySelector('[data-filed="'+i+'"] select').value;
+            let mode = document.querySelector('[data-fileid="'+i+'"] select').value;
             files[i].mode = mode;
           }
           saveAnnouncement(ClassRoomTest.courseId, message, files).then(() => {
