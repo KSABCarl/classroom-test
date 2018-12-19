@@ -164,7 +164,12 @@ textarea {
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.coursework.me https://www.googleapis.com/auth/classroom.announcements.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive";
+      var SCOPES = 'https://www.googleapis.com/auth/classroom.courses.readonly ' +
+        'https://www.googleapis.com/auth/classroom.coursework.me ' +
+        'https://www.googleapis.com/auth/classroom.rosters.readonly ' +
+        'https://www.googleapis.com/auth/classroom.announcements.readonly ' +
+        'https://www.googleapis.com/auth/drive.file ' +
+        'https://www.googleapis.com/auth/drive';
 
       /**
        *  On load, called to load the auth2 library and API client library.
@@ -363,7 +368,7 @@ textarea {
           '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
-        getSubmissions(courseWork.courseId, courseWork.id).then(() => {
+        getSubmissions(courseWork).then(() => {
           //showSubmissions(courseWork.id);
         });
       }
@@ -436,6 +441,9 @@ textarea {
           let courseWork = response.result.courseWork;
           if (courseWork && courseWork.length > 0) {
             for (i = 0; i < courseWork.length; i++) {
+              if (courseWork[i].submissionModificationMode == 'STUDENT_COPY') {
+                copyFile(courseWork, i);
+              }
               ClassRoomTest.courseWork.push(courseWork[i]);
             }
           }
@@ -443,11 +451,34 @@ textarea {
         });
       }
 
-      function getSubmissions(courseId, courseWorkId) {
-        ClassRoomTest.submissions[courseWorkId] = [];
+      function copyFile(courseWork, i) {
+        gapi.client.classroom.courses.students.get({
+          courseId: courseWork.courseId,
+          userId: 'me'
+        }).then(resp => {
+          console.log(resp);
+        })
+        // håll reda på i eftersom den kan användas för att hitta i
+        // ClassRoomTest.courseWork
+        // anropa drive-api:et med att kopiera fil
+        // - ändra namn, lägg i rätt classroom-mapp
+        // mappen från courses.students.get().studentWorkFolder
+        // copiera via drive.files.copy({fileId, name, parents[]})
+      }
+
+      function getSubmissions(courseWork) {
+        // Submissions are not initiated unless you visit Classroom
+        // To handle student-copies we need to this manually with Drive-api,
+        // wait for an update to the Classoom-api to allow for this
+        // or open Classroom in an iframe.
+        // If manual handling of student-copies this should be done in
+        // getCourseWork and get patched into the submissions
+        // assignmentSubmission
+
+        ClassRoomTest.submissions[courseWork.id] = [];
         return gapi.client.classroom.courses.courseWork.studentSubmissions.list({
-          courseId: courseId,
-          courseWorkId: courseWorkId,
+          courseId: courseWork.courseId,
+          courseWorkId: courseWork.id,
           pageSize: 0
         }).then(function(response) {
           console.log(response);

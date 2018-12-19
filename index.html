@@ -182,7 +182,12 @@ textarea {
 
       // Authorization scopes required by the API; multiple scopes can be
       // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/classroom.courses https://www.googleapis.com/auth/classroom.rosters https://www.googleapis.com/auth/classroom.coursework.students https://www.googleapis.com/auth/classroom.announcements https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive";
+      var SCOPES = 'https://www.googleapis.com/auth/classroom.courses ' +
+        'https://www.googleapis.com/auth/classroom.rosters ' +
+        'https://www.googleapis.com/auth/classroom.coursework.students ' +
+        'https://www.googleapis.com/auth/classroom.announcements ' +
+        'https://www.googleapis.com/auth/drive.file ' +
+        'https://www.googleapis.com/auth/drive';
 
       /**
        *  On load, called to load the auth2 library and API client library.
