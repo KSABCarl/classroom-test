@@ -528,7 +528,7 @@ textarea {
           pageSize: 0
         }).then(function(response) {
           let users = response.result.students;
-          if (users.length > 0) {
+          if (users && users.length > 0) {
             for (i = 0; i < users.length; i++) {
               ClassRoomTest.students[users[i].userId]= users[i].profile;
             }
