@@ -150,13 +150,6 @@ textarea {
         </div>
       </div>
 
-      <div id="announcementCreate">
-        <h3>Skapa meddelande</h3>
-        <textarea placeholder="Mitt meddelande..." rows="4"></textarea>
-        <button id="pickFiles">Bifoga fil</button>
-        <div id="myFilesA">
-        </div>
-      </div>
       <div id="teacherAdd">
       </div>
       <div id="studentAdd">
@@ -174,7 +167,6 @@ textarea {
     <div id="createCourse">
       <h3>Skapa kurs:</h3>
       <label for="createCourseName">Namn: </label><input id="createCourseName"></input>
-      <label for="createCourseOwner">Ägare: </label><input id="createCourseOwner"></input>
       <button>Skapa kurs</button>
     </div>
 
@@ -252,8 +244,36 @@ textarea {
         showDisplay('allCourseWork');
       }
       document.getElementById('createAnnouncement').onclick = function() {
-        document.getElementById('announcementCreate').style.display = 'block';
-
+        ClassRoomTest.selectedFiles = {};
+        let data = createFragment(
+          '<div id="announcementCreate">' +
+            '<h3>Skapa meddelande</h3>' +
+            '<textarea placeholder="Mitt meddelande..." rows="4"></textarea>'+
+            '<button id="pickFiles">Bifoga fil</button>'+
+            '<div id="myFilesA"></div>' +
+            '<button id="saveAnnounement">Spara</button>'+
+          '</div>');
+        document.document.getElementById('selectedCourse').insertAdjacentElement('afterend', data);
+        const pickFiles = document.getElementsById('pickFiles');
+        const save =  document.getElementsById('saveAnnounement');
+        pickFiles.onclick = () => {
+          ClassRoomTest.pickerTarget = 'myFilesA';
+          createPicker();
+        }
+        save.onclick = () => {
+          let message = document.querySelector('#announcementCreate textarea').value;
+          let files = ClassRoomTest.selectedFiles;
+          for (i in files) {
+            let mode = document.querySelector('[data-filed="'+i+'"] select').value;
+            files[i].mode = mode;
+          }
+          saveAnnouncement(ClassRoomTest.courseId, message, files).then(() => {
+            document.getElementsById('announcementCreate').remove();
+            getAnnouncements(ClassRoomTest.courseId).then(() => {
+              showDisplay('allAnnouncements');
+            });
+          });
+        }
       }
 
       document.getElementById('deleteCourse').onclick = function() {
@@ -264,15 +284,13 @@ textarea {
 
       document.querySelector('#createCourse button').onclick = function() {
         let name = document.getElementById('createCourseName').value;
-        let owner = document.getElementById('createCourseOwner').value;
-        createCourse(name, owner);
+        createCourse(name, 'me');
       }
 
       document.getElementById('pickFiles').onclick = function() {
         ClassRoomTest.pickerTarget = 'myFilesA';
         createPicker();
       }
-
 
 
       const createFragment = (htmlStr) => {
@@ -581,6 +599,8 @@ textarea {
         // you can retrieve the course. The alias is passed as the id
         // for the course p:<name> (for project-scoped) or d:<name>
         // (for domain-scoped).
+        // The owner could be a common administration-user and all
+        // teachers are added separately with createTacher
         gapi.client.classroom.courses.create({
           name: name,
           ownerId: owner,
@@ -610,6 +630,30 @@ textarea {
         });
       }
 
+
+      function saveAnnouncement(cid, message, files) {
+        let payload = {
+          courseId: cid,
+          text: message,
+          state: 'PUBLISHED'
+        };
+        let materials = [];
+        for (i in files) {
+          materials.push({
+            'driveFile': {
+              id: files[i].id
+            },
+            'shareMode': files[i].mode
+          })
+        }
+
+        return gapi.client.classroom.courses.announcements.create({
+          courseId: cid,
+          text: message,
+          materials: materials
+        });
+      }
+
       function createPicker() {
         // for announcement
         let token = gapi.auth.getToken();
@@ -633,6 +677,7 @@ textarea {
       console.log(resp);
       if (resp.action == 'picked') {
         var doc = resp.docs[0];
+        ClassRoomTest.selectedFiles[doc.id] = doc;
         var data = createFragment(
           '<div class="file" data-fileId="'+doc.id+'">' +
             '<a href="'+doc.url+'"<i class="fas fa-file"></i> '+doc.name+'</a>' +
