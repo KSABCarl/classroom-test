@@ -259,7 +259,7 @@ textarea {
         pickFiles.onclick = () => {
           ClassRoomTest.pickerTarget = 'myFilesA';
           createPicker();
-        }
+        };
         save.onclick = () => {
           let message = document.querySelector('#announcementCreate textarea').value;
           let files = ClassRoomTest.selectedFiles;
@@ -273,7 +273,7 @@ textarea {
               showDisplay('allAnnouncements');
             });
           });
-        }
+        };
       }
 
       document.getElementById('deleteCourse').onclick = function() {
@@ -286,12 +286,6 @@ textarea {
         let name = document.getElementById('createCourseName').value;
         createCourse(name, 'me');
       }
-
-      document.getElementById('pickFiles').onclick = function() {
-        ClassRoomTest.pickerTarget = 'myFilesA';
-        createPicker();
-      }
-
 
       const createFragment = (htmlStr) => {
         let frag = document.createDocumentFragment();
