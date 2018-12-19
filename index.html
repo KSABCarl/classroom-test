@@ -254,8 +254,8 @@ textarea {
             '<button id="saveAnnounement">Spara</button>'+
           '</div>');
         document.getElementById('selectedCourse').after(data);
-        const pickFiles = document.getElementsById('pickFiles');
-        const save =  document.getElementsById('saveAnnounement');
+        const pickFiles = document.getElementById('pickFiles');
+        const save =  document.getElementById('saveAnnounement');
         pickFiles.onclick = () => {
           ClassRoomTest.pickerTarget = 'myFilesA';
           createPicker();
@@ -268,7 +268,7 @@ textarea {
             files[i].mode = mode;
           }
           saveAnnouncement(ClassRoomTest.courseId, message, files).then(() => {
-            document.getElementsById('announcementCreate').remove();
+            document.getElementById('announcementCreate').remove();
             getAnnouncements(ClassRoomTest.courseId).then(() => {
               showDisplay('allAnnouncements');
             });
