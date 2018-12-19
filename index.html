@@ -380,8 +380,14 @@ textarea {
             '</h4>' +
             '<h3>'+announcement.text+'</h3>' +
             data +
+            '<i class="fas fa-trash"></i>' +
           '</div>');
         document.getElementById('data').appendChild(html);
+        let trash = document.querySelector('[data-id="'+announcement.id+'"] .fa-trash'):
+        trash.onclick = () => {
+          console.log('Trash announcemnt');
+          alert('NOT IMPLEMENTED');
+        }
       }
 
       const showCourseWork = (courseWork) => {
@@ -637,6 +643,7 @@ textarea {
             'shareMode': files[i].mode
           })
         }
+        console.log(materials);
 
         return gapi.client.classroom.courses.announcements.create({
           courseId: cid,
