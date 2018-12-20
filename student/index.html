@@ -367,12 +367,10 @@ textarea {
           (courseWork.description? '<h4>' + courseWork.description + '</h4>' : '') +
           data +
           '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>' +
+          '<pre>'+JSON.stringify(courseWork.submissions)+'</pre>' +
           '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
-        getSubmissions(courseWork).then(() => {
-          //showSubmissions(courseWork.id);
-        });
       }
 
 
@@ -432,6 +430,7 @@ textarea {
         });
       }
 
+      console.log('v 4');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = [];
         document.getElementById('loadCourseWork').style.display = 'block';
@@ -439,15 +438,18 @@ textarea {
           courseId: id,
           pageSize: 0
         }).then(function(response) {
-          console.log(response);
-          let courseWork = response.result.courseWork;
-          if (courseWork && courseWork.length > 0) {
-            for (i = 0; i < courseWork.length; i++) {
-              copyFilesIfNeccessary(courseWork[i], i);
-              ClassRoomTest.courseWork.push(courseWork[i]);
+          getSubmissions(courseWork).then(submissions => {
+            courseWork.submissions = submissions;
+            console.log(courseWork);
+            let courseWork = response.result.courseWork;
+            if (courseWork && courseWork.length > 0) {
+              for (i = 0; i < courseWork.length; i++) {
+                copyFilesIfNeccessary(courseWork[i], i);
+                ClassRoomTest.courseWork.push(courseWork[i]);
+              }
             }
-          }
-          document.getElementById('loadCourseWork').style.display = 'none';
+            document.getElementById('loadCourseWork').style.display = 'none';
+          });
         });
       }
 
@@ -459,23 +461,27 @@ textarea {
           ClassRoomTest.student = resp.result;
         });
       }
-      console.log('v 3');
+
       function copyFilesIfNeccessary(courseWork, i) {
         let files = courseWork.materials;
         let folderId = ClassRoomTest.student.studentWorkFolder.id;
         let name = ClassRoomTest.student.profile.name.fullName;
-        console.log(courseWork);
         if (files && files.length > 0) {
           for (j in files) {
             console.log(files[j]);
             if (files[j].driveFile && files[j].driveFile.shareMode == 'STUDENT_COPY') {
+              // kontrollera om studentsubmissions finns i så fall så ska
+              // filen redan ha kopierats
               let file = files[j].driveFile.driveFile;
               gapi.client.drive.files.copy({
                 fileId: file.id,
                 name: name + ' - ' + file.title,
                 parents: [folderId]
               }).then(resp => {
-                // lägg in i ClassRoomTest
+                // ta bort filen från ClassRoomTest
+                // lägg till i studentSubmissions via modifyAttachments
+                // om filen redan finns i studentSubmissions så ska den
+                // inte kopieras
                 console.log(resp);
               });
             }
@@ -498,20 +504,11 @@ textarea {
         // getCourseWork and get patched into the submissions
         // assignmentSubmission
 
-        ClassRoomTest.submissions[courseWork.id] = [];
         return gapi.client.classroom.courses.courseWork.studentSubmissions.list({
           courseId: courseWork.courseId,
           courseWorkId: courseWork.id,
           pageSize: 0
-        }).then(function(response) {
-          console.log(response);
-/*          let submissions = response.result.studentSubmissions;
-          if (submissions && submissions.length > 0) {
-            for (i = 0; i < submissions.length; i++) {
-              ClassRoomTest.submissions[courseWorkId].push(submissions[i]);
-            }
-          }*/
-        });
+        }).then(response => response.result.studentSubmissions);
       }
 
 
