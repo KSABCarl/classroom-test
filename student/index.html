@@ -459,7 +459,7 @@ textarea {
           ClassRoomTest.student = resp.result;
         });
       }
-      console.log('v 2');
+      console.log('v 3');
       function copyFilesIfNeccessary(courseWork, i) {
         let files = courseWork.materials;
         let folderId = ClassRoomTest.student.studentWorkFolder.id;
@@ -468,7 +468,7 @@ textarea {
         if (files && files.length > 0) {
           for (j in files) {
             console.log(files[j]);
-            if (files[j].driveFile && files[j].driveFile.driveFile.shareMode == 'STUDENT_COPY') {
+            if (files[j].driveFile && files[j].driveFile.shareMode == 'STUDENT_COPY') {
               let file = files[j].driveFile.driveFile;
               gapi.client.drive.files.copy({
                 fileId: file.id,
