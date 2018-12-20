@@ -284,9 +284,10 @@ textarea {
         btn.onclick = function() {
           ClassRoomTest.courseId = course.id;
           showDisplay('selectedCourse');
-          getStudent(course.id, 'me');
-          getAnnouncements(course.id);
-          getCourseWork(course.id);
+          getStudent(course.id, 'me').then(() => {
+            getAnnouncements(course.id);
+            getCourseWork(course.id);
+          });
         }
       }
 
