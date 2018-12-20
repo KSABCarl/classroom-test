@@ -284,6 +284,7 @@ textarea {
         btn.onclick = function() {
           ClassRoomTest.courseId = course.id;
           showDisplay('selectedCourse');
+          getStudent(course.id, 'me');
           getAnnouncements(course.id);
           getCourseWork(course.id);
         }
@@ -449,41 +450,31 @@ textarea {
         });
       }
 
+      function getStudent(cid, id) {
+        return gapi.client.classroom.courses.students.get({
+          courseId: cid,
+          userId: id
+        }).then(resp => {
+          ClassRoomTest.student = resp.result;
+        });
+      }
+
       function copyFileIfNeccessary(courseWork, i) {
         let files = courseWork.materials;
-        let folderId = false;
-        let name = false;
+        let folderId = ClassRoomTest.student.studentWorkFolder.id;
+        let name = ClassRoomTest.student.profile.name.fullName;
         if (files && files.length > 0) {
           for (j in files) {
             if (files[j].driveFile && files[j].driveFile.driveFile.shareMode == 'STUDENT_COPY') {
               let file = files[j].driveFile.driveFile;
-              if (folderId) {
-                gapi.client.drive.files.copy({
-                  fileId: file.id,
-                  name: name + ' - ' + file.title,
-                  parents: [folderId]
-                }).then(resp => {
-                  // lägg in i ClassRoomTest
-                  console.log(resp);
-                });
-              } else {
-
-                gapi.client.classroom.courses.students.get({
-                  courseId: courseWork.courseId,
-                  userId: 'me'
-                }).then(resp => {
-                  folderId = resp.result.studentWorkFolder.id;
-                  name = resp.result.profile.name.fullName;
-                  gapi.client.drive.files.copy({
-                    fileId: file.id,
-                    name: name + ' - ' + file.title,
-                    parents: [folderId]
-                  }).then(resp => {
-                    // lägg in i ClassRoomTest
-                    console.log(resp);
-                  });
-                });
-              }
+              gapi.client.drive.files.copy({
+                fileId: file.id,
+                name: name + ' - ' + file.title,
+                parents: [folderId]
+              }).then(resp => {
+                // lägg in i ClassRoomTest
+                console.log(resp);
+              });
             }
           }
         }
