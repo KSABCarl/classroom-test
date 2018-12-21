@@ -396,9 +396,9 @@ textarea {
             if (submission.state == 'NEW') {
                 console.log('coursework is new – need to handle?');
             }
-            if (coursework.workType == 'SHORT_ANSWER_QUESTION') {
+            if (courseWork.workType == 'SHORT_ANSWER_QUESTION') {
               html += '<label>Svar: <input type="text" id="answer_'+submission.id+'"></label> <button class="answerQ" onclick="answerQuestion(\''+courseWork.id+'\', \''+submission.id+'\')"';
-            } else if (coursework.workType == 'ASSIGNMENT') {
+            } else if (courseWork.workType == 'ASSIGNMENT') {
               html += showSubmission(submission);
               html += '<div id="pickFiles_'+submission.id+'"></div>';
               html += '<button class="apendFile" onclick="subAppendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
@@ -515,7 +515,7 @@ textarea {
         });
       }
 
-      console.log('v 25');
+      console.log('v 26');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
