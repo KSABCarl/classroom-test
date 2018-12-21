@@ -395,7 +395,8 @@ textarea {
                 console.log('coursework is new – need to handle?');
             }
             html += showSubmission(submission);
-            html += '<button class="appendFile" onclick="appendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <a class="turnIn" data-subId="'+submission.id+'>Lämna in</a>';
+            html += '<div id="pickFiles_'+submission.id+'"></div>';
+            html += '<button class="subAppendFile" onclick="appendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
           } else {
             console.log('Turned in');
             // möjigt att reclaim?
@@ -404,25 +405,32 @@ textarea {
         html += '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
-        /*document.querySelector('[data-id="'+courseWork.id+'"] a.appendFile').onclick((ev) => {
-          console.log('append file');
-          console.log(ev);
-          // anropa picker + hantera
-        });*/
-        //document.querySelector('[data-id="'+courseWork.id+'"] a.turnIn').onclick(() => {
-          // uppdatera submissions först med modifyAttachements
-          /*gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
-            courseId: courseWork.courseId,
-            courseWorkId: courseWork.id,
-            id: submission.
-          })*/
-          // anropa turnIn
-      //    console.log('turn in');
-      //  });
       }
-      function appendFile(cid, sid) {
-        console.log(cid);
-        console.log(sid);
+
+
+      function subAppendFile(cwid, sid) {
+        console.log('Append file');
+        ClassRoomTest.pickerTarget = 'pickFiles_'+sid;
+        createPicker();
+      }
+
+      function subTurnIn(cwid, sid) {
+        // uppdatera submissions först med modifyAttachements
+        let cid = ClassRoomTest.courseWork[cwid].courseId;
+        let attachements = [];
+        let files = document.querySelectorAll('#pickFiles_'+sid+' div.file');
+        for (i in files) {
+          console.log(files[i]);
+          // hämta från data-fileId
+
+        }
+        /*gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
+          courseId: cid,
+          courseWorkId: cwid,
+          id: sid,
+          addAttachemnts: attachments
+        }).then()*/
+        // anropa turnIn
       }
 
       const showDisplay = (value) => {
@@ -481,7 +489,7 @@ textarea {
         });
       }
 
-      console.log('v 17');
+      console.log('v 18');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
