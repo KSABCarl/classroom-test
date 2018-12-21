@@ -114,7 +114,6 @@ table.subs td.late {
 
 table a, table a:hover {
   color: rgb(159, 77, 93);
-  display: block;
 }
 
 textarea {
@@ -521,17 +520,17 @@ textarea {
         } else if (submission.courseWorkType == 'ASSIGNMENT') {
           if (submission.assignmentSubmission.attachments) {
             let attachments = submission.assignmentSubmission.attachments;
-            data += '<td>';
+            data += '<td><ol>';
             for (i = 0; i < attachments.length; i++) {
               if (attachments[i].driveFile) {
                 let file = attachments[i].driveFile;
-                data += '<a href="'+file.alternateLink+'">' + file.title + '</a>';
+                data += '<li><a href="'+file.alternateLink+'">' + file.title + '</a></li>';
               } else if (attachments[i].link) {
                 let link = attachments[i].link;
-                data += '<a href="'+link.url+'">' + link.title + '</a>';
+                data += '<li><a href="'+link.url+'">' + link.title + '</a></li>';
               }
             }
-            data += '</td>';
+            data += '</ol></td>';
           } else {
             data += '<td>Ingen fil</td>';
           }
