@@ -366,9 +366,17 @@ textarea {
         html += '<h3>' + courseWork.title + '</h3>' +
           (courseWork.description? '<h4>' + courseWork.description + '</h4>' : '') +
           data +
-          '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>' +
-          '<pre>'+JSON.stringify(courseWork.submissions)+'</pre>' +
-          '</div>';
+          '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>';
+        for (i in courseWork.submissions) {
+          let submission = courseWork.submissions[i];
+          if (submissions.submissionState != 'TURNED_IN') {
+            if (submissions.submissionState != 'NEW') {
+                console.log('coursework is new – need to handle?');
+            }
+            html += '<pre>' + JSON.stringify(submission) + '</pre>';
+          }
+        }
+        html += '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
       }
@@ -440,17 +448,40 @@ textarea {
         }).then(function(response) {
           let courseWorks = response.result.courseWork;
           if (courseWorks && courseWorks.length > 0) {
-            for (i = 0; i < courseWorks.length; i++) {
+            for (i in courseWorks) {
               let courseWork = courseWorks[i];
+              let files = courseWork.materials;
+              let selFiles = [];
+              for (j in files) {
+                if (files[j].driveFile && files[j].driveFile.shareMode == 'STUDENT_COPY') {
+                  // file should be in submissions
+                } else {
+                  selFiles.push(files[j]);
+                }
+              }
+              courseWork.materials = selFiles;
               ClassRoomTest.courseWork[courseWork.id] = courseWork;
               getSubmissions(courseWork).then(submissions => {
-                ClassRoomTest.courseWork[courseWork.id].submissions = submissions;
-                copyFilesIfNeccessary(courseWork);
+                let cwid = submissions.courseWorkId;
+                let cw = ClassRoomTest.courseWork[cw];
+                ClassRoomTest.courseWork[cw].submissions = submissions;
               });
             }
           }
           document.getElementById('loadCourseWork').style.display = 'none';
         });
+      }
+
+      function hasTemplate(materials) {
+        let target = [];
+        for (j = 0; j < materials.length; j++) {
+          if (materials[j].driveFile) {
+            if (materials[j].driveFile.driveFile.title.startsWith('[Template]')) {
+              target.push(j);
+            }
+          }
+        }
+        return target;
       }
 
       function getStudent(cid, id) {
@@ -462,7 +493,7 @@ textarea {
         });
       }
 
-      function copyFilesIfNeccessary(courseWork) {
+  /*    function copyFilesIfNeccessary(courseWork) {
         let files = courseWork.materials;
         let folderId = ClassRoomTest.student.studentWorkFolder.id;
         let name = ClassRoomTest.student.profile.name.fullName;
@@ -471,7 +502,6 @@ textarea {
         console.log(submissions);
         if (files && files.length > 0) {
           for (j in files) {
-            console.log(files[j]);
             if (files[j].driveFile && files[j].driveFile.shareMode == 'STUDENT_COPY') {
               // kontrollera om studentsubmissions finns i så fall så ska
               // filen redan ha kopierats
@@ -482,22 +512,25 @@ textarea {
               } else {
                 console.log('Not in submissions');
                 // copy file and replace in courseWork
+                gapi.client.drive.files.copy({
+                    fileId: file.id,
+                    name: name + ' - ' + file.title,
+                    parents: [folderId]
+                  }).then(resp => {
+
+                    // ta bort filen från ClassRoomTest
+                    // lägg till i studentSubmissions via modifyAttachments
+                    // om filen redan finns i studentSubmissions så ska den
+                    // inte kopieras
+                    console.log(resp);
+                  });
+
               }
-              
+
               console.log('File');
               console.log(file);
 
-            /*  gapi.client.drive.files.copy({
-                fileId: file.id,
-                name: name + ' - ' + file.title,
-                parents: [folderId]
-              }).then(resp => {
-                // ta bort filen från ClassRoomTest
-                // lägg till i studentSubmissions via modifyAttachments
-                // om filen redan finns i studentSubmissions så ska den
-                // inte kopieras
-                console.log(resp);
-              });*/
+            /*  */
             }
           }
         }
@@ -507,19 +540,8 @@ textarea {
         // - ändra namn, lägg i rätt classroom-mapp
         // mappen från courses.students.get().studentWorkFolder
         // copiera via drive.files.copy({fileId, name, parents[]})
-      }
+      } */
 
-      function isInSubmissions(file, submissions, name) {
-        let title = name + ' - ' + file.title;
-        for (i = 0; i < submissions.length; i++) {
-          if (submissions[i].assignmentSubmission) {
-            let sub = submissions[i].assignmentSubmission.attachments;
-            for (j = 0; j < sub; j++) {
-              return sub[j].driveFile.title == title;
-            }
-          }
-        }
-      }
 
       function getSubmissions(courseWork) {
         // Submissions are not initiated unless you visit Classroom
