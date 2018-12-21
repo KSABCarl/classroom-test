@@ -112,8 +112,9 @@ table.subs td.late {
   background-color: rgba(193, 48, 48, 0.55);
 }
 
-table.a, table a:hover {
+table a, table a:hover {
   color: rgb(159, 77, 93);
+  display: block;
 }
 
 textarea {
@@ -523,9 +524,13 @@ textarea {
             console.log(attachments);
             data += '<td>';
             for (i = 0; i < attachments.length; i++) {
-              let file = attachments[0].driveFile;
-              data += '<a href="'+file.alternateLink+'">' +
-                file.title + '</a><br>';
+              if (file.driveFile) {
+                let file = attachments[i].driveFile;
+                data += '<a href="'+file.alternateLink+'">' + file.title + '</a>';
+              } else if (file.link) {
+                let link = attachments[i].link;
+                data += '<a href="'+link.url+'">' + link.title + '</a>';
+              }
             }
             data += '</td>';
           } else {
