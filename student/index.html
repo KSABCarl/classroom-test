@@ -438,7 +438,7 @@ textarea {
         });
       }
 
-      console.log('v 11');
+      console.log('v 12');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
@@ -463,8 +463,8 @@ textarea {
               ClassRoomTest.courseWork[courseWork.id] = courseWork;
               getSubmissions(courseWork).then(submissions => {
                 let cwid = submissions.courseWorkId;
-                let cw = ClassRoomTest.courseWork[cw];
-                ClassRoomTest.courseWork[cw].submissions = submissions;
+                let cw = ClassRoomTest.courseWork[cwid];
+                ClassRoomTest.courseWork[cwid].submissions = submissions;
               });
             }
           }
@@ -530,7 +530,7 @@ textarea {
               console.log('File');
               console.log(file);
 
-            
+
             }
           }
         }
