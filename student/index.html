@@ -430,26 +430,26 @@ textarea {
         });
       }
 
-      console.log('v 4');
+      console.log('v 5');
       function getCourseWork(id) {
-        ClassRoomTest.courseWork = [];
+        ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
         return gapi.client.classroom.courses.courseWork.list({
           courseId: id,
           pageSize: 0
         }).then(function(response) {
-          getSubmissions(courseWork).then(submissions => {
-            courseWork.submissions = submissions;
-            console.log(courseWork);
-            let courseWork = response.result.courseWork;
-            if (courseWork && courseWork.length > 0) {
-              for (i = 0; i < courseWork.length; i++) {
+          let courseWork = response.result.courseWork;
+          if (courseWork && courseWork.length > 0) {
+            for (i = 0; i < courseWork.length; i++) {
+              ClassRoomTest.courseWork[courseWork.id] = courseWork;
+              getSubmissions(courseWork).then(submissions => {
+                ClassRoomTest.courseWork[courseWork.id].submissions = submissions;
+                console.log(ClassRoomTest.courseWork[courseWork.id]);
                 copyFilesIfNeccessary(courseWork[i], i);
-                ClassRoomTest.courseWork.push(courseWork[i]);
-              }
+              });
             }
-            document.getElementById('loadCourseWork').style.display = 'none';
-          });
+          }
+          document.getElementById('loadCourseWork').style.display = 'none';
         });
       }
 
