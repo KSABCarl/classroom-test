@@ -193,6 +193,8 @@ textarea {
           console.log(error);
         }).then(() =>  {
           gapi.load('picker');
+          return acceptAllInvitations();
+        }).then(() => {
           return getCourses();
         }).then(() => {
           showDisplay('allCourses');
@@ -211,48 +213,6 @@ textarea {
       document.getElementById('showCourseWork').onclick = function() {
         showDisplay('allCourseWork');
       }
-
-      /*document.getElementById('addCourseWork').onclick = function() {
-        ClassRoomTest.selectedFiles = {};
-        let data = createFragment(
-          '<div id="courseWorkCreate">' +
-            '<h3>Skapa uppgift</h3>' +
-            '<input type="text" class="title" placeholder="Min titel..."><br>' +
-            '<textarea placeholder="Mina instruktioner..." rows="4"></textarea>'+
-            '<select>' +
-              '<option value="ASSIGNMENT">Inlämning</option>' +
-              '<option value="SHORT_ANSWER_QUESTION">Kortsvar</option>' +
-            '</select>' +
-            '<input type="datetime-local" class="due"><br>' +
-            '<button id="pickFiles">Bifoga fil</button>'+
-            '<div id="myFilesC"></div>' +
-            '<button id="saveCourseWork">Spara</button>'+
-          '</div>');
-        document.getElementById('selectedCourse').after(data);
-        const pickFiles = document.getElementById('pickFiles');
-        const save =  document.getElementById('saveCourseWork');
-        pickFiles.onclick = () => {
-          ClassRoomTest.pickerTarget = 'myFilesC';
-          createPicker();
-        };
-        save.onclick = () => {
-          let title = document.querySelector('#courseWorkCreate input.title').value;
-          let message = document.querySelector('#courseWorkCreate textarea').value;
-          let worktype = document.querySelector('#courseWorkCreate select').value;
-          let duets = document.querySelector('#courseWorkCreate input.due').value;
-          let files = ClassRoomTest.selectedFiles;
-          for (i in files) {
-            let mode = document.querySelector('[data-fileid="'+i+'"] select').value;
-            files[i].mode = mode;
-          }
-          saveCourseWork(ClassRoomTest.courseId, title, message, worktype, duets, files).then(() => {
-            document.getElementById('courseWorkCreate').remove();
-            getCourseWork(ClassRoomTest.courseId).then(() => {
-              showDisplay('allCourseWork');
-            });
-          });
-        };
-      }*/
 
       const createFragment = (htmlStr) => {
         let frag = document.createDocumentFragment();
@@ -497,6 +457,17 @@ textarea {
         });
       }
 
+      function acceptAllInvitations() {
+        return gapi.client.classroom.invitations.list({
+          pageSize: 0,
+          userId: "me"
+        }).then(resp => {
+          console.log(resp);
+          return;
+        });
+      }
+
+
       function getAnnouncements(id) {
         ClassRoomTest.announcements = [];
         document.getElementById('loadAnnouncements').style.display = 'block';
@@ -515,7 +486,7 @@ textarea {
         });
       }
 
-      console.log('v 26');
+      console.log('v 27');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
