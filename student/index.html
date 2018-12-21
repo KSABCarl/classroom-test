@@ -430,7 +430,7 @@ textarea {
         });
       }
 
-      console.log('v 5');
+      console.log('v 6');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
@@ -438,9 +438,10 @@ textarea {
           courseId: id,
           pageSize: 0
         }).then(function(response) {
-          let courseWork = response.result.courseWork;
-          if (courseWork && courseWork.length > 0) {
-            for (i = 0; i < courseWork.length; i++) {
+          let courseWorks = response.result.courseWork;
+          if (courseWorks && courseWorks.length > 0) {
+            for (i = 0; i < courseWorks.length; i++) {
+              let courseWork = courseWorks[i];
               ClassRoomTest.courseWork[courseWork.id] = courseWork;
               getSubmissions(courseWork).then(submissions => {
                 ClassRoomTest.courseWork[courseWork.id].submissions = submissions;
