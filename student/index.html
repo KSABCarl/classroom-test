@@ -406,12 +406,12 @@ textarea {
         html += '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
-        document.querySelector('[data-id=["'+courseWork.id+'"] button.appendFile').onclick((ev) => {
+        document.querySelector('[data-id="'+courseWork.id+'"] button.appendFile').onclick((ev) => {
           console.log('append file');
           console.log(ev);
           // anropa picker + hantera
         });
-        document.querySelector('[data-id=["'+courseWork.id+'"] button.turnIn').onclick(() => {
+        document.querySelector('[data-id="'+courseWork.id+'"] button.turnIn').onclick(() => {
           // uppdatera submissions först med modifyAttachements
           /*gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
             courseId: courseWork.courseId,
