@@ -369,8 +369,8 @@ textarea {
           '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>';
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
-          if (submissions.submissionState != 'TURNED_IN') {
-            if (submissions.submissionState != 'NEW') {
+          if (submission.submissionState != 'TURNED_IN') {
+            if (submission.submissionState != 'NEW') {
                 console.log('coursework is new – need to handle?');
             }
             html += '<pre>' + JSON.stringify(submission) + '</pre>';
@@ -438,7 +438,7 @@ textarea {
         });
       }
 
-      console.log('v 13');
+      console.log('v 14');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
