@@ -463,9 +463,9 @@ textarea {
           userId: "me"
         }).then(resp => {
           console.log(resp);
-          if (resp.invitations) {
-            for (i in resp.invitations) {
-              let invitation = resp.invitations[i];
+          if (resp.result.invitations) {
+            for (i in resp.result.invitations) {
+              let invitation = resp.result.invitations[i];
               gapi.client.classroom.invitations.accept({id: invitation.id}).then(resp => console.log(resp));
             }
           }
@@ -492,7 +492,7 @@ textarea {
         });
       }
 
-      console.log('v 28');
+      console.log('v 29');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
