@@ -430,7 +430,7 @@ textarea {
         });
       }
 
-      console.log('v 9');
+      console.log('v 10');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
@@ -476,10 +476,18 @@ textarea {
               // kontrollera om studentsubmissions finns i så fall så ska
               // filen redan ha kopierats
               let file = files[j].driveFile.driveFile;
+              if (isInSubmissions(file, submissions, name)) {
+                console.log('Already in submissions');
+
+              } else {
+                console.log('Not in submissions');
+                // copy file and replace in courseWork
+              }
+              
               console.log('File');
               console.log(file);
 
-              gapi.client.drive.files.copy({
+            /*  gapi.client.drive.files.copy({
                 fileId: file.id,
                 name: name + ' - ' + file.title,
                 parents: [folderId]
@@ -489,7 +497,7 @@ textarea {
                 // om filen redan finns i studentSubmissions så ska den
                 // inte kopieras
                 console.log(resp);
-              });
+              });*/
             }
           }
         }
@@ -499,6 +507,18 @@ textarea {
         // - ändra namn, lägg i rätt classroom-mapp
         // mappen från courses.students.get().studentWorkFolder
         // copiera via drive.files.copy({fileId, name, parents[]})
+      }
+
+      function isInSubmissions(file, submissions, name) {
+        let title = name + ' - ' + file.title;
+        for (i = 0; i < submissions.length; i++) {
+          if (submissions[i].assignmentSubmission) {
+            let sub = submissions[i].assignmentSubmission.attachments;
+            for (j = 0; j < sub; j++) {
+              return sub[j].driveFile.title == title;
+            }
+          }
+        }
       }
 
       function getSubmissions(courseWork) {
@@ -575,7 +595,6 @@ textarea {
 
     function pickerCallback(resp) {
       var url = 'nothing';
-      console.log(resp);
       if (resp.action == 'picked') {
         var doc = resp.docs[0];
         ClassRoomTest.selectedFiles[doc.id] = doc;

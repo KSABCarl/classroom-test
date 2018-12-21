@@ -520,9 +520,13 @@ textarea {
         } else if (submission.courseWorkType == 'ASSIGNMENT') {
           if (submission.assignmentSubmission.attachments) {
             let attachments = submission.assignmentSubmission.attachments;
-            let file = attachments[attachments.length-1].driveFile;
-            data += '<td><a href="'+file.alternateLink+'">' +
-            file.title + '</a></td>';
+            data += '<td>';
+            for (i = 0; i < attachments.length; i++) {
+              let file = attachments[0].driveFile;
+              data += '<a href="'+file.alternateLink+'">' +
+                file.title + '</a>';
+            }
+            data += '</td>';
           } else {
             data += '<td>Ingen fil</td>';
           }
