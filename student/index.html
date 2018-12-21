@@ -395,7 +395,7 @@ textarea {
                 console.log('coursework is new – need to handle?');
             }
             html += showSubmission(submission);
-            html += '<button class="appendFile" onclick="appendFile('+coursWork.id+', '+submission.id+')"">Bifoga fil</b> <a class="turnIn" data-subId="'+submission.id+'>Lämna in</a>';
+            html += '<button class="appendFile" onclick="appendFile('+courseWork.id+', '+submission.id+')"">Bifoga fil</b> <a class="turnIn" data-subId="'+submission.id+'>Lämna in</a>';
           } else {
             console.log('Turned in');
             // möjigt att reclaim?
@@ -481,7 +481,7 @@ textarea {
         });
       }
 
-      console.log('v 15');
+      console.log('v 16');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
