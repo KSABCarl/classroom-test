@@ -406,6 +406,7 @@ textarea {
         html += '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
+        console.log(courseWork.id);
         document.querySelector('[data-id="'+courseWork.id+'"] a.appendFile').onclick((ev) => {
           console.log('append file');
           console.log(ev);
@@ -480,7 +481,7 @@ textarea {
         });
       }
 
-      console.log('v 14');
+      console.log('v 15');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
