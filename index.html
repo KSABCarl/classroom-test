@@ -484,7 +484,7 @@ textarea {
 
           html += '<h4>Inlämning: ' +
               new Date(d.year, d.month, d.day, t.hours, t.minutes).toLocaleString() +
-            '</h4>';
+            '  ––  <button onclick="deleteCW(\''+courseWork.id+'\')">Radera uppgift</button></h4>';
         }
         html += '<h3>' + courseWork.title + '</h3>' +
           (courseWork.description? '<h4>' + courseWork.description + '</h4>' : '') +
@@ -497,6 +497,20 @@ textarea {
         getSubmissions(courseWork.courseId, courseWork.id).then(() => {
           showSubmissions(courseWork.id);
         });
+      }
+
+      function deleteCW(cwid) {
+        if (confirm('Är du säker?')) {
+          let cid = ClassRoomTest.courseWork[cwid].courseId;
+          gapi.client.classroom.courses.courseWork.delete({
+            courseId: cid,
+            id: cwid
+          }).then(resp => {
+            getCourseWork(cid).then(() => {
+              showDisplay('allCourseWork');
+            });
+          });
+        }
       }
 
       const showSubmissions = (id) => {
