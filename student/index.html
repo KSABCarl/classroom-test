@@ -391,13 +391,18 @@ textarea {
 
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
+          console.log(submission);
           if (submission.state != 'TURNED_IN') {
             if (submission.state == 'NEW') {
                 console.log('coursework is new – need to handle?');
             }
-            html += showSubmission(submission);
-            html += '<div id="pickFiles_'+submission.id+'"></div>';
-            html += '<button class="apendFile" onclick="subAppendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
+            if (coursework.workType == 'SHORT_ANSWER_QUESTION') {
+              html += '<label>Svar: <input type="text" id="answer_'+submission.id+'"></label> <button class="answerQ" onclick="answerQuestion(\''+courseWork.id+'\', \''+submission.id+'\')"';
+            } else if (coursework.workType == 'ASSIGNMENT') {
+              html += showSubmission(submission);
+              html += '<div id="pickFiles_'+submission.id+'"></div>';
+              html += '<button class="apendFile" onclick="subAppendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
+            }
           } else {
             html += '<p>Redan lämnat in.</p>';
           }
@@ -407,9 +412,17 @@ textarea {
         document.getElementById('data').appendChild(html);
       }
 
+      function answerQuestion(cwid, sid) {
+        let cid = ClassRoomTest.courseWork[cwid].courseId;
+        let answer = document.getElementById('answer_'+sid);
+        console.log(cid);
+        console.log(cwid);
+        console.log(sid);
+        console.log(answer);
+
+      }
 
       function subAppendFile(cwid, sid) {
-        console.log('Append file');
         ClassRoomTest.pickerTarget = 'pickFiles_'+sid;
         createPicker();
       }
@@ -502,7 +515,7 @@ textarea {
         });
       }
 
-      console.log('v 24');
+      console.log('v 25');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
