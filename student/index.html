@@ -421,7 +421,9 @@ textarea {
         let attachements = [];
         let files = document.querySelectorAll('#pickFiles_'+sid+' div.file');
         for (i in files) {
-          console.log(files[i]);
+          let fid = files[i].getAttribute('data-fileid')
+          let file = ClassRoomTest.selectedFiles[fid];
+          console.log(file);
           // hämta från data-fileId
 
         }
@@ -490,7 +492,7 @@ textarea {
         });
       }
 
-      console.log('v 19');
+      console.log('v 20');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
