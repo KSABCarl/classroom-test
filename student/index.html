@@ -285,6 +285,7 @@ textarea {
           ClassRoomTest.courseId = course.id;
           showDisplay('selectedCourse');
           getStudent(course.id, 'me').then(() => {
+            ClassRoomTest.selectedFiles = {};
             getAnnouncements(course.id);
             getCourseWork(course.id);
           });
@@ -489,7 +490,7 @@ textarea {
         });
       }
 
-      console.log('v 18');
+      console.log('v 19');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
