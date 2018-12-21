@@ -352,7 +352,7 @@ textarea {
 
       document.getElementById('deleteCourse').onclick = function() {
         if (confirm('Är du säker?')) {
-          deleteCourse(ClassRoomTest.course);
+          deleteCourse();
         }
       }
 
@@ -707,7 +707,8 @@ textarea {
         });
       }
 
-      function deleteCourse(course) {
+      function deleteCourse() {
+        let course = ClassRoomTest.courses[ClassRoomTest.courseId];
         // Course has to be set to other than ACTIVE before it can be
         // deleted. When calling update name has to be passed (a bug in api)
         gapi.client.classroom.courses.update({
