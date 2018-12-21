@@ -367,6 +367,9 @@ textarea {
           (courseWork.description? '<h4>' + courseWork.description + '</h4>' : '') +
           data +
           '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>';
+
+        console.log(courseWork.submissions);
+
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
           if (submission.submissionState != 'TURNED_IN') {
