@@ -391,6 +391,7 @@ textarea {
 
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
+          console.log(submission);
           if (submission.submissionState != 'TURNED_IN') {
             if (submission.submissionState == 'NEW') {
                 console.log('coursework is new – need to handle?');
@@ -429,22 +430,19 @@ textarea {
             });
           }
         }
-        console.log('Modfiying');
         gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
           courseId: cid,
           courseWorkId: cwid,
           id: sid,
           addAttachments: attachments
         }).then(resp => {
-          console.log('Turning in');
           gapi.client.classroom.courses.courseWork.studentSubmissions.turnIn({
             courseId: cid,
             courseWorkId: cwid,
             id: sid
           }).then(resp => {
-            console.log('Turned in');
-            console.log(resp);
-          })
+            getCourseWork(cid);
+          });
         });
       }
 
@@ -504,7 +502,7 @@ textarea {
         });
       }
 
-      console.log('v 22');
+      console.log('v 23');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
