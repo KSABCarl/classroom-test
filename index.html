@@ -521,7 +521,6 @@ textarea {
         } else if (submission.courseWorkType == 'ASSIGNMENT') {
           if (submission.assignmentSubmission.attachments) {
             let attachments = submission.assignmentSubmission.attachments;
-            console.log(attachments);
             data += '<td>';
             for (i = 0; i < attachments.length; i++) {
               if (file.driveFile) {
