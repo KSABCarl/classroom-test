@@ -388,8 +388,6 @@ textarea {
           data +
           '<p> typ: '+ courseWork.workType + ', modifierng: ' + courseWork.submissionModificationMode + '</p>';
 
-
-
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
           if (submission.submissionState != 'TURNED_IN') {
@@ -397,7 +395,7 @@ textarea {
                 console.log('coursework is new – need to handle?');
             }
             html += showSubmission(submission);
-            html += '<a class="appendFile" data-subId="'+submission.id+'">Bifoga fil</a> <a class="turnIn" data-subId="'+submission.id+'>Lämna in</a>';
+            html += '<button class="appendFile" onclick="appendFile('+coursWork.id+', '+submission.id+')"">Bifoga fil</b> <a class="turnIn" data-subId="'+submission.id+'>Lämna in</a>';
           } else {
             console.log('Turned in');
             // möjigt att reclaim?
@@ -406,13 +404,12 @@ textarea {
         html += '</div>';
         html = createFragment(html);
         document.getElementById('data').appendChild(html);
-        console.log(courseWork.id);
-        document.querySelector('[data-id="'+courseWork.id+'"] a.appendFile').onclick((ev) => {
+        /*document.querySelector('[data-id="'+courseWork.id+'"] a.appendFile').onclick((ev) => {
           console.log('append file');
           console.log(ev);
           // anropa picker + hantera
-        });
-        document.querySelector('[data-id="'+courseWork.id+'"] a.turnIn').onclick(() => {
+        });*/
+        //document.querySelector('[data-id="'+courseWork.id+'"] a.turnIn').onclick(() => {
           // uppdatera submissions först med modifyAttachements
           /*gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
             courseId: courseWork.courseId,
@@ -420,10 +417,13 @@ textarea {
             id: submission.
           })*/
           // anropa turnIn
-          console.log('turn in');
-        });
+      //    console.log('turn in');
+      //  });
       }
-
+      function appendFile(cid, sid) {
+        console.log(cid);
+        console.log(sid);
+      }
 
       const showDisplay = (value) => {
         clearElememt('data');
