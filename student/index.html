@@ -484,7 +484,7 @@ textarea {
         }).then(function(response) {
           let announcements = response.result.announcements;
 
-          if (announcements.length > 0) {
+          if (announcements && announcements.length > 0) {
             for (i = 0; i < announcements.length; i++) {
               ClassRoomTest.announcements.push(announcements[i]);
             }
