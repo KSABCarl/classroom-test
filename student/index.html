@@ -418,22 +418,34 @@ textarea {
       function subTurnIn(cwid, sid) {
         // uppdatera submissions först med modifyAttachements
         let cid = ClassRoomTest.courseWork[cwid].courseId;
-        let attachements = [];
+        let attachments = [];
         let files = document.querySelectorAll('#pickFiles_'+sid+' div.file');
         for (i in files) {
-          let fid = files[i].getAttribute('data-fileid')
-          let file = ClassRoomTest.selectedFiles[fid];
-          console.log(file);
-          // hämta från data-fileId
-
+          if (files[i]) {
+            let fid = files[i].getAttribute('data-fileid');
+            let file = ClassRoomTest.selectedFiles[fid];
+            attachments.push({
+              driveFile: { id: fid }
+            });
+          }
         }
-        /*gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
+        console.log('Modfiying');
+        gapi.client.classroom.courses.courseWork.studentSubmissions.modifyAttachments({
           courseId: cid,
           courseWorkId: cwid,
           id: sid,
-          addAttachemnts: attachments
-        }).then()*/
-        // anropa turnIn
+          addAttachments: attachments
+        }).then(resp => {
+          console.log('Turning in');
+          gapi.client.classroom.courses.courseWork.studentSubmissions.turnIn({
+            courseId: cid,
+            courseWorkId: cwid,
+            id: sid
+          }).then(resp => {
+            console.log('Turned in');
+            console.log(resp);
+          })
+        });
       }
 
       const showDisplay = (value) => {
@@ -492,7 +504,7 @@ textarea {
         });
       }
 
-      console.log('v 20');
+      console.log('v 21');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
