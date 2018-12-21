@@ -430,7 +430,7 @@ textarea {
         });
       }
 
-      console.log('v 7');
+      console.log('v 8');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
@@ -445,7 +445,6 @@ textarea {
               ClassRoomTest.courseWork[courseWork.id] = courseWork;
               getSubmissions(courseWork).then(submissions => {
                 ClassRoomTest.courseWork[courseWork.id].submissions = submissions;
-                console.log(ClassRoomTest.courseWork[courseWork.id]);
                 copyFilesIfNeccessary(courseWork);
               });
             }
@@ -467,6 +466,7 @@ textarea {
         let files = courseWork.materials;
         let folderId = ClassRoomTest.student.studentWorkFolder.id;
         let name = ClassRoomTest.student.profile.name.fullName;
+        let submissions = ClassRoomTest.courseWork[courseWork.id].submissions;
         if (files && files.length > 0) {
           for (j in files) {
             console.log(files[j]);
@@ -474,6 +474,9 @@ textarea {
               // kontrollera om studentsubmissions finns i så fall så ska
               // filen redan ha kopierats
               let file = files[j].driveFile.driveFile;
+              console.log(submissions);
+              console.log(file);
+
               gapi.client.drive.files.copy({
                 fileId: file.id,
                 name: name + ' - ' + file.title,
