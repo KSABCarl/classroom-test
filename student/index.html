@@ -462,7 +462,12 @@ textarea {
           pageSize: 0,
           userId: "me"
         }).then(resp => {
-          console.log(resp);
+          if (resp.invitations) {
+            for (i in resp.invitations) {
+              let invitation = resp.invitations[i];
+              gapi.client.classroom.invitations.accept({id: invitation.id});
+            }
+          }
           return;
         });
       }
@@ -486,7 +491,7 @@ textarea {
         });
       }
 
-      console.log('v 27');
+      console.log('v 28');
       function getCourseWork(id) {
         ClassRoomTest.courseWork = {};
         document.getElementById('loadCourseWork').style.display = 'block';
