@@ -421,7 +421,7 @@ textarea {
         let attachments = [];
         let files = document.querySelectorAll('#pickFiles_'+sid+' div.file');
         for (i in files) {
-          if (files[i]) {
+          if (files[i].getAttribute) {
             let fid = files[i].getAttribute('data-fileid');
             let file = ClassRoomTest.selectedFiles[fid];
             attachments.push({
