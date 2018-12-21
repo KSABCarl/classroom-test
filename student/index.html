@@ -318,6 +318,26 @@ textarea {
         return '<div class="material">' + data + '</div>';
       }
 
+      const showSubmission = (submission) => {
+        let data = '';
+        if (submission.assignmentSubmission) {
+          let attachments = submission.assignmentSubmission.attachments;
+          for (i in attachments) {
+            if (attachments[i].driveFile) {
+              let file = attachments[i].driveFile;
+              data += '<a href="'+file.alternateLink+'">' +
+                '<img src="'+file.thumbnailUrl+'"></a>' +
+                '<a class="title" href="'+file.alternateLink+'" data-id="'+file.id+'">' +
+                file.title + '</a>';
+            } else if (attachments[i].link) {
+              let link = attachments[i].link;
+              data += '<a class="title" href="'+link.url+'">' + link.title + '</a>';
+            }
+          }
+        }
+        return '<div class="material">' + data + '</div>';
+      }
+
       const showAnnouncement = (announcement) => {
         let data = '';
         if (announcement.materials) {
@@ -373,10 +393,11 @@ textarea {
         for (i in courseWork.submissions) {
           let submission = courseWork.submissions[i];
           if (submission.submissionState != 'TURNED_IN') {
-            if (submission.submissionState != 'NEW') {
+            if (submission.submissionState == 'NEW') {
                 console.log('coursework is new – need to handle?');
             }
-            html += '<pre>' + JSON.stringify(submission) + '</pre>';
+            html += showSubmission(submission);
+            html += '<button>Bifoga fil</button> <button>Lämna in</button>';
           }
         }
         html += '</div>';
@@ -495,64 +516,11 @@ textarea {
         });
       }
 
-  /*    function copyFilesIfNeccessary(courseWork) {
-        let files = courseWork.materials;
-        let folderId = ClassRoomTest.student.studentWorkFolder.id;
-        let name = ClassRoomTest.student.profile.name.fullName;
-        let submissions = ClassRoomTest.courseWork[courseWork.id].submissions;
-        console.log('Submissions');
-        console.log(submissions);
-        if (files && files.length > 0) {
-          for (j in files) {
-            if (files[j].driveFile && files[j].driveFile.shareMode == 'STUDENT_COPY') {
-              // kontrollera om studentsubmissions finns i så fall så ska
-              // filen redan ha kopierats
-              let file = files[j].driveFile.driveFile;
-              if (isInSubmissions(file, submissions, name)) {
-                console.log('Already in submissions');
-
-              } else {
-                console.log('Not in submissions');
-                // copy file and replace in courseWork
-                gapi.client.drive.files.copy({
-                    fileId: file.id,
-                    name: name + ' - ' + file.title,
-                    parents: [folderId]
-                  }).then(resp => {
-
-                    // ta bort filen från ClassRoomTest
-                    // lägg till i studentSubmissions via modifyAttachments
-                    // om filen redan finns i studentSubmissions så ska den
-                    // inte kopieras
-                    console.log(resp);
-                  });
-
-              }
-
-              console.log('File');
-              console.log(file);
-
-
-            }
-          }
-        }
-        // håll reda på i eftersom den kan användas för att hitta i
-        // ClassRoomTest.courseWork
-        // anropa drive-api:et med att kopiera fil
-        // - ändra namn, lägg i rätt classroom-mapp
-        // mappen från courses.students.get().studentWorkFolder
-        // copiera via drive.files.copy({fileId, name, parents[]})
-      } */
-
-
       function getSubmissions(courseWork) {
-        // Submissions are not initiated unless you visit Classroom
-        // To handle student-copies we need to this manually with Drive-api,
-        // wait for an update to the Classoom-api to allow for this
-        // or open Classroom in an iframe.
-        // If manual handling of student-copies this should be done in
-        // getCourseWork and get patched into the submissions
-        // assignmentSubmission
+        // Submissions from "STUDENT_COPY"-assignments are not always initiated
+        // unless you visit Classroom
+        // Sometimes multiple calls need to me made for the the copies to be
+        // available
 
         return gapi.client.classroom.courses.courseWork.studentSubmissions.list({
           courseId: courseWork.courseId,
