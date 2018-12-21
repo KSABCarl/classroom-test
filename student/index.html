@@ -462,10 +462,11 @@ textarea {
           pageSize: 0,
           userId: "me"
         }).then(resp => {
+          console.log(resp);
           if (resp.invitations) {
             for (i in resp.invitations) {
               let invitation = resp.invitations[i];
-              gapi.client.classroom.invitations.accept({id: invitation.id});
+              gapi.client.classroom.invitations.accept({id: invitation.id}).then(resp => console.log(resp));
             }
           }
           return;
