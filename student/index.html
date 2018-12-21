@@ -396,7 +396,7 @@ textarea {
             }
             html += showSubmission(submission);
             html += '<div id="pickFiles_'+submission.id+'"></div>';
-            html += '<button class="subAppendFile" onclick="appendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
+            html += '<button class="apendFile" onclick="subAppendFile(\''+courseWork.id+'\', \''+submission.id+'\')">Bifoga fil</b> <button class="turnIn"  onclick="subTurnIn(\''+courseWork.id+'\', \''+submission.id+'\')">Lämna in</button>';
           } else {
             console.log('Turned in');
             // möjigt att reclaim?
